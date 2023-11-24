@@ -1,0 +1,23 @@
+{
+  "name": "scrape_backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/po1so9/scrape_backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/po1so9/scrape_backend/issues"
+  },
+  "homepage": "https://github.com/po1so9/scrape_backend#readme",
+  "dependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
