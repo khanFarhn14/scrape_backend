@@ -2,7 +2,7 @@ const cart = require("../model/cart");
 
 const CartItems = async(req,res) =>{
     const {mobile:mobile} = req.params;
-    console.log(mobile);
+    // console.log(mobile);
     try {
         const Items = await cart.findOne({mobile})
         if(!Items){
@@ -13,6 +13,16 @@ const CartItems = async(req,res) =>{
         console.log(error);
         res.status(500).json({ error: 'Failed to fetch user' });
     }
+};
+    
+const addItem = async (req, res)=>{
+    const {mobile: mobile} = req.params;
+    try {
+        const item = await cart.findOneAndUpdate({mobile},{"$push": {cartItems: req.body}}, {upsert: true})
+        if(item) res.status(202).json({message: "Added Successfully"})
+    } catch (error) {
+        res.status(500).json({error: 'Failed to add Item'})
+    }
 }
 
-module.exports = {CartItems}
+module.exports = {CartItems, addItem}
