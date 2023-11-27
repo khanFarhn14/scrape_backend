@@ -3,8 +3,9 @@ const connectDB = require('./db/connection')
 const product = require('./routes/product')
 const bodyParser = require('body-parser')
 const users = require('./routes/user')
-const notFound = require('./middleware/notFound')
+const scrap = require('./routes/scrap')
 const cartItems = require('./routes/cart')
+const notFound = require('./middleware/notFound')
 
 require('dotenv').config();
 
@@ -18,6 +19,7 @@ app.use(bodyParser.json());
 app.use('/api/v1', product)
 app.use('/api/v1', users)
 app.use('/api/v1', cartItems)
+app.use('/api/v1', scrap)
 app.use(notFound)
 
 
@@ -35,3 +37,4 @@ const start = async () =>{
 }
 
 start()
+
