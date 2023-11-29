@@ -54,12 +54,18 @@ const updateUser = async (req,res)=>{
 }
 
 const userDetails = async (req,res)=>{
+    
     const {mobile:mobile} = req.params;
-    let singleUser = await user.findOne({mobile:mobile});
-    if(singleUser){
-        res.status(200).json({singleUser});
+    try {
+        let singleUser = await user.findOne({mobile:mobile});
+        if(singleUser){
+            res.status(200).json({singleUser});
+        }
+        else res.status(404).json({message: "user Does not exist"})
+    } catch (error) {
+        res.status(500).json({message: "Internal Server Error"})
     }
-    else res.status(404).json({message: "user Does not exist"})
+    
 }
 
 module.exports = {
