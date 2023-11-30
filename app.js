@@ -5,6 +5,7 @@ const bodyParser = require('body-parser')
 const users = require('./routes/user')
 const scrap = require('./routes/scrap')
 const cartItems = require('./routes/cart')
+const order = require('./routes/order')
 const notFound = require('./middleware/notFound')
 
 require('dotenv').config();
@@ -20,6 +21,7 @@ app.use('/api/v1', product)
 app.use('/api/v1', users)
 app.use('/api/v1', cartItems)
 app.use('/api/v1', scrap)
+app.use('/api/v1', order)
 app.use(notFound)
 
 
