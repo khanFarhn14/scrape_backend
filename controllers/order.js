@@ -109,7 +109,7 @@ const updateRequestStatus = async (req, res) =>{
 
         if (user) {
         // Find the product in the products array with the current name
-        const order = user.orders.find(order => order.scrapName === `${scrapName}` && order.requestStatus === 'pending');
+        const order = user.orders.find(order => order.scrapName === `${scrapName}` && order.requestStatus === 'Pending');
 
         if (order) {
             // Update the product name
