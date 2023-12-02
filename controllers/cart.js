@@ -19,7 +19,7 @@ const addItem = async (req, res)=>{
     const {mobile: mobile} = req.params;
     try {
         const item = await cart.findOneAndUpdate({mobile},{"$push": {cartItems: req.body}}, {upsert: true})
-        if(item) res.status(202).json({message: "Added Successfully"})
+        if(item) res.status(204).json({message: "Added Successfully"})
     } catch (error) {
         res.status(500).json({error: 'Failed to add Item'})
     }
