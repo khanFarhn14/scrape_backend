@@ -1,4 +1,5 @@
 const orders = require('../model/order');
+const profileDetails = require('../model/user')
 
 const orderHistory = async(req,res) =>{
     const {mobile:mobile} = req.params;
@@ -54,11 +55,10 @@ const recentOrders = async(req,res) =>{
 
 
 const addOrder = async (req, res) =>{
-    let today = new Date()
-    let date = today.getDate()+'-'+(today.getMonth()+1)+'-'+today.getFullYear();
+    
     const {mobile:mobile} = req.params;
     // console.log(mobile);
-    const {scrapName, scrapImage, weight} = req.body;
+    const {scrapName, scrapImage, weight, requestDate} = req.body;
   try {
     // Check if the document with the given phone number exists
     const existingOrder = await orders.findOne({ mobile });
@@ -70,7 +70,8 @@ const addOrder = async (req, res) =>{
         scrapImage: scrapImage,
         weight: weight,
         requestStatus: 'pending',
-        requestDate: `${date}`
+        requestDate: requestDate,
+        confirmationDate:"",
       });
 
       await existingOrder.save();
@@ -84,7 +85,8 @@ const addOrder = async (req, res) =>{
             scrapImage: scrapImage,
             weight: weight,
             requestStatus: 'pending',
-            requestDate: `${date}`
+            requestDate: requestDate,
+            confirmationDate: "",
         }],
       });
 
@@ -99,7 +101,7 @@ const addOrder = async (req, res) =>{
 
 
 const updateRequestStatus = async (req, res) =>{
-    const {mobile, requestStatus, scrapName} = req.body;
+    const {mobile, requestStatus, scrapName, confirmationDate} = req.body;
     // console.log(mobile, requestStatus, scrapName);
     try {
         // Find the document with the given phone number
@@ -111,7 +113,8 @@ const updateRequestStatus = async (req, res) =>{
 
         if (order) {
             // Update the product name
-            order.requestStatus = `${requestStatus}`;
+            order.requestStatus = requestStatus;
+            order.confirmationDate = confirmationDate;
 
             // Save the updated document
             await user.save();
@@ -128,6 +131,69 @@ const updateRequestStatus = async (req, res) =>{
     }
 }
 
+const ordersFromUser = async (req, res) => {
+    try {
+      const result = await orders.aggregate([
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'mobile',
+            foreignField: 'mobile',
+            as: 'profileDetails',
+          },
+        },
+        {
+          $unwind: {
+            path: '$profileDetails',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $project: {
+            'profileDetails.name': 1,
+            'profileDetails.address': 1,
+            'mobile': 1,
+            'orders': 1,
+          },
+        },
+        {
+          $unwind: {
+            path: '$orders',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $match: {
+            'orders.requestStatus': 'pending',
+          },
+        },
+        {
+          $group: {
+            _id: {
+              mobile: '$mobile',
+              name: '$profileDetails.name',
+              address: '$profileDetails.address',
+            },
+            orders: {
+              $push: '$orders',
+            },
+          },
+        },
+        {
+          $project: {
+            userdetails: '$_id',
+            orders: 1,
+            _id: 0, // Exclude the default _id field
+          },
+        },
+      ]);
+      if(result.length !== 0) res.status(200).json(result);
+      else res.status(404).json({message: "NO Incomming Requests"});
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+  
 
-
-module.exports = {orderHistory, addOrder, recentOrders, updateRequestStatus}
+module.exports = {orderHistory, addOrder, recentOrders, updateRequestStatus, ordersFromUser}
