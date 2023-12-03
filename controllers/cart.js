@@ -31,13 +31,13 @@ const deleteItem = async (req, res) => {
     const {scrapName} = req.body;
     console.log(mobile, scrapName);
     try {
-        const item = await cart.findOneAndUpdate(
+        const items = await cart.findOneAndUpdate(
         { mobile },
         { $pull: { cartItems: { scrapName: scrapName } } },
         { new: true } // Return the modified document
     );
-    if (item) {
-            res.status(204).json({ message: 'Deleted Successfully' });
+    if (items) {
+            res.status(200).json({ message: 'Deleted Successfully', item });
       } else {
             res.status(404).json({ message: 'Item not found in the cart' });
       }
