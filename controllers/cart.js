@@ -25,4 +25,28 @@ const addItem = async (req, res)=>{
     }
 }
 
-module.exports = {CartItems, addItem}
+
+const deleteItem = async (req, res) => {
+    const {mobile} = req.params;
+    const {scrapName} = req.body;
+    console.log(mobile, scrapName);
+    try {
+        const item = await cart.findOneAndUpdate(
+        { mobile },
+        { $pull: { cartItems: { scrapName: scrapName } } },
+        { new: true } // Return the modified document
+    );
+    if (item) {
+            res.status(204).json({ message: 'Deleted Successfully' });
+      } else {
+            res.status(404).json({ message: 'Item not found in the cart' });
+      }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({error: "internal server error"})
+    }
+}
+
+
+
+module.exports = {CartItems, addItem, deleteItem}
