@@ -6,7 +6,10 @@ const CartItems = async(req,res) =>{
     try {
         const Items = await cart.findOne({mobile})
         if(!Items){
-            res.status(404).json('NO Items FOUND')
+            res.status(404).json({message: 'NO Items FOUND'})
+        }
+        else if(Items.cartItems.length === 0){
+            res.status(404).json({message: 'NO Items FOUND'})
         }
         else res.status(200).json({Items})
     } catch (error) {
@@ -36,8 +39,11 @@ const deleteItem = async (req, res) => {
         { $pull: { cartItems: { scrapName: scrapName } } },
         { new: true } // Return the modified document
     );
-    if (items) {
-            res.status(200).json({ message: 'Deleted Successfully', item });
+    if(!items){
+        res.status(404).json({message: 'NO Items FOUND'})
+    }
+    else if (items) {
+            res.status(200).json({ message: 'Deleted Successfully', items });
       } else {
             res.status(404).json({ message: 'Item not found in the cart' });
       }
