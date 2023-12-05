@@ -13,8 +13,8 @@ const CartItems = async(req,res) =>{
         }
         else res.status(200).json({Items})
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: 'Failed to fetch user' });
+            console.log(error);
+            res.status(500).json({ error: 'Failed to fetch user' });
     }
 };
     
@@ -48,11 +48,28 @@ const deleteItem = async (req, res) => {
             res.status(404).json({ message: 'Item not found in the cart' });
       }
     } catch (error) {
-        console.log(error);
-        res.status(500).json({error: "internal server error"})
+            console.log(error);
+            res.status(500).json({error: "internal server error"})
     }
 }
 
+const clearCartList = async (req, res) =>{
+    const {mobile} = req.params;
+    try {
+        const result = await cart.updateOne(
+            { mobile },
+            { $set: { cartItems: [] } }
+        );
+    
+        if (result.modifiedCount > 0) {
+            res.status(204).json({ message: 'CartItems cleared successfully', result});
+        } else {
+            res.status(404).json({ message: 'CartItems array is already empty'});
+        }
+      } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
 
-
-module.exports = {CartItems, addItem, deleteItem}
+module.exports = {CartItems, addItem, deleteItem, clearCartList}
