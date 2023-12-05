@@ -12,7 +12,7 @@ const orderHistory = async(req,res) =>{
         else {
             const product = order.orders.filter(product => product.requestStatus === 'Accepted' || product.requestStatus === 'Rejected' );
 
-            if (product) {
+            if (product.length!==0) {
                 res.status(200).json({product});
                 // console.log('Product found:', product);
             } else {
@@ -32,12 +32,12 @@ const recentOrders = async(req,res) =>{
     try {
         const user = await orders.findOne({mobile})
         if(!user){
-            res.status(404).json({message: 'NO Items FOUND'})
+            res.status(404).json('NO Items FOUND')
         }
         else {
             const product = user.orders.filter(product => product.requestStatus === 'Pending');
 
-            if (product) {
+            if (product.length !== 0) {
                 res.status(200).json({product});
                 // console.log('Product found:', product);
             } else {
