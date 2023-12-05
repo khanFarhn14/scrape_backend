@@ -32,10 +32,10 @@ const recentOrders = async(req,res) =>{
     try {
         const user = await orders.findOne({mobile})
         if(!user){
-            res.status(404).json('NO Items FOUND')
+            res.status(404).json({message: 'NO Items FOUND'})
         }
         else {
-            const product = user.orders.filter(product => product.requestStatus === 'pending');
+            const product = user.orders.filter(product => product.requestStatus === 'Pending');
 
             if (product) {
                 res.status(200).json({product});
@@ -69,9 +69,9 @@ const addOrder = async (req, res) =>{
         scrapName: scrapName,
         scrapImage: scrapImage,
         weight: weight,
-        requestStatus: 'pending',
+        requestStatus: 'Pending',
         requestDate: requestDate,
-        confirmationDate:"",
+        confirmationDate: "Not Available",
       });
 
       await existingOrder.save();
@@ -84,9 +84,9 @@ const addOrder = async (req, res) =>{
             scrapName: scrapName,
             scrapImage: scrapImage,
             weight: weight,
-            requestStatus: 'pending',
+            requestStatus: 'Pending',
             requestDate: requestDate,
-            confirmationDate: "",
+            confirmationDate: "Not Available",
         }],
       });
 
