@@ -5,7 +5,6 @@ const { orderHistory, addOrder, recentOrders, updateRequestStatus, ordersFromUse
 router.route('/user/:mobile/history').get(orderHistory);
 router.route('/user/:mobile/recent').get(recentOrders);
 router.route('/user/:mobile/addorder').post(addOrder);
-router.route('/user/:mobile/addorder').post(addOrder);
 router.route('/admin/statusupdate').patch(updateRequestStatus);
 router.route('/admin/allorders').get(ordersFromUser);
 
