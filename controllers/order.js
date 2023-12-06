@@ -210,7 +210,7 @@ const ordersFromUser = async (req, res) => {
         },
         {
           $match: {
-            'orders.requestStatus': 'pending',
+            'orders.requestStatus': 'Pending',
           },
         },
         {
@@ -234,7 +234,7 @@ const ordersFromUser = async (req, res) => {
         },
       ]);
       if(result.length !== 0) res.status(200).json(result);
-      else res.status(404).json({message: "NO Incomming Requests"});
+      else res.status(404).json({message: "NO Incomming Requests", result});
     } catch (error) {
       console.error('Error:', error);
       res.status(500).json({ error: 'Internal Server Error' });
