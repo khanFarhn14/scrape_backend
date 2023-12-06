@@ -54,50 +54,96 @@ const recentOrders = async(req,res) =>{
 
 
 
-const addOrder = async (req, res) =>{
+// const addOrder = async (req, res) =>{
     
-    const {mobile:mobile} = req.params;
-    // console.log(mobile);
-    const {scrapName, scrapImage, weight, requestDate} = req.body;
+//     const {mobile:mobile} = req.params;
+//     // console.log(mobile);
+//     const {scrapName, scrapImage, weight, requestDate} = req.body;
+//   try {
+//     // Check if the document with the given phone number exists
+//     const existingOrder = await orders.findOne({ mobile });
+
+//     if (existingOrder) {
+//       // Orders with the phone number exists, push the product to the Orders array
+//       existingOrder.orders.push({
+//         scrapName: scrapName,
+//         scrapImage: scrapImage,
+//         weight: weight,
+//         requestStatus: 'Pending',
+//         requestDate: requestDate,
+//         confirmationDate: "Not Available",
+//       });
+
+//       await existingOrder.save();
+//       res.status(200).json({ message: 'Order added to existing List.' });
+//     } else {
+//       // Document with the phone number doesn't exist, create a new document
+//       const newOrder = new orders({
+//         mobile:mobile,
+//         orders: [{
+//             scrapName: scrapName,
+//             scrapImage: scrapImage,
+//             weight: weight,
+//             requestStatus: 'Pending',
+//             requestDate: requestDate,
+//             confirmationDate: "Not Available",
+//         }],
+//       });
+
+//       await newOrder.save();
+//       res.status(201).json({ message: 'New document created with the product.' });
+//     }
+//   } catch (error) {
+//     console.error('Error:', error);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// }
+
+const addOrder = async (req, res) => {
+  const { mobile } = req.params;
+  const { orders: newOrders } = req.body;
+
   try {
     // Check if the document with the given phone number exists
     const existingOrder = await orders.findOne({ mobile });
 
     if (existingOrder) {
-      // Orders with the phone number exists, push the product to the Orders array
-      existingOrder.orders.push({
-        scrapName: scrapName,
-        scrapImage: scrapImage,
-        weight: weight,
-        requestStatus: 'Pending',
-        requestDate: requestDate,
-        confirmationDate: "Not Available",
-      });
+      // Orders with the phone number exist, push the products to the Orders array
+      existingOrder.orders.push(
+        ...newOrders.map(({ scrapName, scrapImage, scrapWeight, requestDate }) => ({
+          scrapName,
+          scrapImage,
+          scrapWeight,
+          requestStatus: 'Pending',
+          requestDate,
+          confirmationDate: 'Not Available',
+        }))
+      );
 
       await existingOrder.save();
-      res.status(200).json({ message: 'Order added to existing List.' });
+      res.status(201).json({ message: 'Orders added to existing list.' });
     } else {
       // Document with the phone number doesn't exist, create a new document
       const newOrder = new orders({
-        mobile:mobile,
-        orders: [{
-            scrapName: scrapName,
-            scrapImage: scrapImage,
-            weight: weight,
-            requestStatus: 'Pending',
-            requestDate: requestDate,
-            confirmationDate: "Not Available",
-        }],
+        mobile,
+        orders: newOrders.map(({ scrapName, scrapImage, scrapWeight, requestDate }) => ({
+          scrapName,
+          scrapImage,
+          scrapWeight,
+          requestStatus: 'Pending',
+          requestDate,
+          confirmationDate: 'Not Available',
+        })),
       });
 
       await newOrder.save();
-      res.status(201).json({ message: 'New document created with the product.' });
+      res.status(201).json({ message: 'New document created with the products.' });
     }
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-}
+};
 
 
 const updateRequestStatus = async (req, res) =>{
