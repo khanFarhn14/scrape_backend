@@ -99,9 +99,56 @@ const recentOrders = async(req,res) =>{
 //   }
 // }
 
+// const addOrder = async (req, res) => {
+//   const { mobile } = req.params;
+//   const { orders: newOrders } = req.body;
+
+//   try {
+//     // Check if the document with the given phone number exists
+//     const existingOrder = await orders.findOne({ mobile });
+
+//     if (existingOrder) {
+//       // Orders with the phone number exist, push the products to the Orders array
+//       existingOrder.orders.push(
+//         ...newOrders.map(({ scrapName, scrapImage, scrapWeight, requestDate }) => ({
+//           scrapName,
+//           scrapImage,
+//           scrapWeight,
+//           requestStatus: 'Pending',
+//           requestDate,
+//           confirmationDate: 'Not Available',
+//         }))
+//       );
+
+//       await existingOrder.save();
+//       res.status(201).json({ message: 'Orders added to existing list.' });
+//     } else {
+//       // Document with the phone number doesn't exist, create a new document
+//       const newOrder = new orders({
+//         mobile,
+//         orders: newOrders.map(({ scrapName, scrapImage, scrapWeight, requestDate }) => ({
+//           scrapName,
+//           scrapImage,
+//           scrapWeight,
+//           requestStatus: 'Pending',
+//           requestDate,
+//           confirmationDate: 'Not Available',
+//         })),
+//       });
+
+//       await newOrder.save();
+//       res.status(201).json({ message: 'New document created with the products.' });
+//     }
+//   } catch (error) {
+//     console.error('Error:', error);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// };
+
+
 const addOrder = async (req, res) => {
   const { mobile } = req.params;
-  const { orders: newOrders } = req.body;
+  const newOrders = req.body; // Assuming req.body is an array of product objects
 
   try {
     // Check if the document with the given phone number exists
@@ -113,7 +160,7 @@ const addOrder = async (req, res) => {
         ...newOrders.map(({ scrapName, scrapImage, scrapWeight, requestDate }) => ({
           scrapName,
           scrapImage,
-          scrapWeight,
+          scrapWeight: scrapWeight, // Assuming weight should be mapped to ScrapWeight
           requestStatus: 'Pending',
           requestDate,
           confirmationDate: 'Not Available',
@@ -121,7 +168,7 @@ const addOrder = async (req, res) => {
       );
 
       await existingOrder.save();
-      res.status(201).json({ message: 'Orders added to existing list.' });
+      res.status(200).json({ message: 'Orders added to existing list.' });
     } else {
       // Document with the phone number doesn't exist, create a new document
       const newOrder = new orders({
@@ -129,7 +176,7 @@ const addOrder = async (req, res) => {
         orders: newOrders.map(({ scrapName, scrapImage, scrapWeight, requestDate }) => ({
           scrapName,
           scrapImage,
-          scrapWeight,
+          scrapWeight: scrapWeight, // Assuming weight should be mapped to ScrapWeight
           requestStatus: 'Pending',
           requestDate,
           confirmationDate: 'Not Available',
@@ -144,6 +191,7 @@ const addOrder = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
 
 
 const updateRequestStatus = async (req, res) =>{
