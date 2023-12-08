@@ -69,5 +69,22 @@ const papers = async (req, res) =>{
 }
 
 
+const singleScrap = async (req,res) =>{
+    const {id} = req.params;
+    // console.log(id);
+    try {
+        const item = await scrap.findOne({_id: id});
+        if(item){
+            res.status(200).json({item});
+        }
+        else{
+            res.status(404).json({message:"Scrap Does Not Exist"})
+        }
+        
+    } catch (error) {
+        res.status(500).json({error: "Internal server error"})
+    }
+}
 
-module.exports = {scrapList, wires, eWastes, metals, papers};
+
+module.exports = {scrapList, wires, eWastes, metals, papers, singleScrap};
