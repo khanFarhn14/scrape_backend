@@ -87,4 +87,25 @@ const singleScrap = async (req,res) =>{
 }
 
 
-module.exports = {scrapList, wires, eWastes, metals, papers, singleScrap};
+const updateScrapPrice = async (req, res) => {
+    const { id } = req.params;
+    const { scrapPrice } = req.body;
+
+    try {
+        const item = await scrap.findOne({ _id: id });
+
+        if (item) {
+            item.scrapPrice = scrapPrice;
+            await item.save();
+            res.status(200).json({ message: 'Updated scrap price', item });
+        } else {
+            res.status(404).json({ message: 'Scrap not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+
+module.exports = {scrapList, wires, eWastes, metals, papers, singleScrap, updateScrapPrice};
