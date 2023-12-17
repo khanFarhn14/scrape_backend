@@ -72,7 +72,7 @@ const addOrder = async (req, res) =>{
         scrapPrice: scrapPrice,
         requestStatus: 'Pending',
         requestDate: requestDate,
-        confirmationDate: "Not Available",
+        confirmationDate: "Select Date",
       });
 
       await existingOrder.save();
@@ -88,7 +88,7 @@ const addOrder = async (req, res) =>{
             scrapPrice: scrapPrice,
             requestStatus: 'Pending',
             requestDate: requestDate,
-            confirmationDate: "Not Available",
+            confirmationDate: "Select Date",
         }],
       });
 
