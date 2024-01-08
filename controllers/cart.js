@@ -18,15 +18,41 @@ const CartItems = async(req,res) =>{
     }
 };
     
-const addItem = async (req, res)=>{
-    const {mobile: mobile} = req.params;
+// const addItem = async (req, res)=>{
+//     const {mobile: mobile} = req.params;
+//     try {
+//         const item = await cart.findOneAndUpdate({mobile},{"$push": {cartItems: req.body}}, {upsert: true})
+//         if(item) res.status(204).json({message: "Added Successfully"})
+//     } catch (error) {
+//         res.status(500).json({error: 'Internal Server Error '})
+//     }
+// }
+
+const addItem = async (req, res) => {
+    const { mobile } = req.params;
+  
     try {
-        const item = await cart.findOneAndUpdate({mobile},{"$push": {cartItems: req.body}}, {upsert: true})
-        if(item) res.status(204).json({message: "Added Successfully"})
+      // Check if the cart with the specified mobile number exists
+      const existingCart = await cart.findOne({ mobile });
+  
+      if (existingCart) {
+        // If the cart exists, push the new item to the cartItems array
+        existingCart.cartItems.push(req.body);
+        // Save the updated cart document
+        await existingCart.save();
+  
+        res.status(204).json({ message: 'Added Successfully' });
+      } else {
+        const newCart = new cart({ mobile, cartItems: [req.body] });
+        await newCart.save();
+        res.status(204).json({ message: 'Added Successfully' });
+      }
     } catch (error) {
-        res.status(500).json({error: 'Internal Server Error '})
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
     }
-}
+  };
+
 
 
 const deleteItem = async (req, res) => {
