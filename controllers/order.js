@@ -227,7 +227,7 @@ const updateRequestStatus = async (req, res) =>{
     }
 }
 
-const ordersFromUser = async (req, res) => {
+const pendingOrdersFromUser = async (req, res) => {
     try {
       const result = await orders.aggregate([
         {
@@ -290,6 +290,73 @@ const ordersFromUser = async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
+const ordersFromUser = async (req, res) => {
+    try {
+      const result = await orders.aggregate([
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'mobile',
+            foreignField: 'mobile',
+            as: 'profileDetails',
+          },
+        },
+        {
+          $unwind: {
+            path: '$profileDetails',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $project: {
+            'profileDetails.name': 1,
+            'profileDetails.address': 1,
+            'mobile': 1,
+            'orders': 1,
+          },
+        },
+        {
+          $unwind: {
+            path: '$orders',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $match: {
+            $or: [
+              { 'orders.requestStatus': 'Accepted' },
+              { 'orders.requestStatus': 'Rejected' },
+            ],
+          },
+        },
+        {
+          $group: {
+            _id: {
+              mobile: '$mobile',
+              name: '$profileDetails.name',
+              address: '$profileDetails.address',
+            },
+            orders: {
+              $push: '$orders',
+            },
+          },
+        },
+        {
+          $project: {
+            userdetails: '$_id',
+            orders: 1,
+            _id: 0, // Exclude the default _id field
+          },
+        },
+      ]);
+      if(result.length !== 0) res.status(200).json(result);
+      else res.status(404).json({message: "NO Incomming Requests", result});
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
   
 
-module.exports = {orderHistory, addOrder, recentOrders, updateRequestStatus, ordersFromUser}
+module.exports = {orderHistory, addOrder, recentOrders, updateRequestStatus, ordersFromUser, pendingOrdersFromUser}
