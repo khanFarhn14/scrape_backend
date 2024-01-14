@@ -25,7 +25,8 @@ const userSchema = new mongoose.Schema({
           }
         }
     },
-    address: {type: String, required: true}
+    address: {type: String, required: true},
+    isAdmin:{type: Boolean, required: true},
 }, {collection: 'users'});
 
 module.exports = new mongoose.model('user', userSchema);
