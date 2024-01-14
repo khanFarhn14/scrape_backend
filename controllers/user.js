@@ -37,6 +37,7 @@ const createUser = async (req,res) => {
                     mobile: req.body.mobile,
                     email: req.body.email,
                     address: req.body.address,
+                    isAdmin: false,
                 });
                 await newuser.save();
                 res.status(201).json({message: "User Created Successfully"})
