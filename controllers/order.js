@@ -73,6 +73,7 @@ const addOrder = async (req, res) =>{
         requestStatus: 'Pending',
         requestDate: requestDate,
         confirmationDate: "Select Date",
+        delivered: false,
       });
 
       await existingOrder.save();
@@ -89,6 +90,7 @@ const addOrder = async (req, res) =>{
             requestStatus: 'Pending',
             requestDate: requestDate,
             confirmationDate: "Select Date",
+            delivered: false,
         }],
       });
 
@@ -206,7 +208,7 @@ const updateRequestStatus = async (req, res) =>{
         if (user) {
         // Find the product in the products array with the current name
         const order = user.orders.find(order => order.scrapName === `${scrapName}` && order.requestStatus === 'Pending');
-
+        console.log(order);
         if (order) {
             // Update the product name
             order.requestStatus = requestStatus;
@@ -260,7 +262,10 @@ const pendingOrdersFromUser = async (req, res) => {
         },
         {
           $match: {
-            'orders.requestStatus': 'Pending',
+            $and: [
+              { 'orders.requestStatus': 'Pending' },
+              { 'orders.delivered': false },
+            ],
           },
         },
         {
@@ -324,9 +329,14 @@ const ordersFromUser = async (req, res) => {
         },
         {
           $match: {
-            $or: [
-              { 'orders.requestStatus': 'Accepted' },
-              { 'orders.requestStatus': 'Rejected' },
+            $and: [
+              {
+                $or: [
+                  { 'orders.requestStatus': 'Accepted' },
+                  { 'orders.requestStatus': 'Rejected' },
+                ],
+              },
+              { 'orders.delivered': false },
             ],
           },
         },
@@ -357,6 +367,30 @@ const ordersFromUser = async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
 };
-  
 
-module.exports = {orderHistory, addOrder, recentOrders, updateRequestStatus, ordersFromUser, pendingOrdersFromUser}
+const markDelivered = async (req, res) => {
+  const { mobile, id} = req.body;
+  try {
+    const user = await orders.findOne({ mobile });
+    if (user) {
+      const order = user.orders.find(order => order._id.toString() === `${id}` && order.delivered === false);
+      if (order) {
+        order.delivered = true;
+        // Save the updated document
+        await user.save();
+        res.status(204).json({ message: 'Order delivery updated successfully.' });
+      } else {
+        res.status(404).json({ error: 'Order Not Found' });
+      }
+    } 
+    else {
+      res.status(404).json({ error: 'User Not Found' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+module.exports = {orderHistory, addOrder, recentOrders, updateRequestStatus, ordersFromUser, pendingOrdersFromUser, markDelivered}
