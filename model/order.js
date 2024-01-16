@@ -8,6 +8,7 @@ const productSchema = new mongoose.Schema({
     requestStatus: {type:String, required:true},
     requestDate: {type:String, required:true},
     confirmationDate: {type:String, required:true},
+    delivered:{type: Boolean, required:true},
 })
 
 const orderSchema = new mongoose.Schema({
