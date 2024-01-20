@@ -8,19 +8,20 @@ const addPincode = async (req, res) =>{
         const existingPincode = await Pincode.findOne({ pincode });
 
         if (existingPincode) {
-            res.status(400).json({ error: 'Pincode already exists' });
+            res.status(409).json({ error: 'Pincode already exists' });
         }
 
-        // Create a new pincode
-        const newPincode = new Pincode({
-            pincode,
-            postalOffice,
-        });
+        else {
+            // Create a new pincode
+            const newPincode = new Pincode({
+                pincode,
+                postalOffice,
+            });
 
-        // Save the new pincode to the database
-        await newPincode.save();
-        res.status(201).json({ message: 'Pincode added successfully' });
-        
+            // Save the new pincode to the database
+            await newPincode.save();
+            res.status(201).json({ message: 'Pincode added successfully' });
+        }
     } catch (error) {
         console.log(error);
         res.status(500).json({error: 'Internal Server Error'})
