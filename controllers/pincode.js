@@ -1,5 +1,21 @@
 const Pincode = require('../model/pincode')
 
+
+const getPincodes = async (req,res)=>{
+    try {
+        const allPincodes = await Pincode.find({}).sort({ pincode: 1 });
+        if (allPincodes) {
+            // Extract relevant data and send as JSON
+            res.status(200).json({pincodes: allPincodes});
+        } else {
+            res.status(404).json({ message: 'No Pincodes Found' });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({error: 'Internal Server Error'})
+    }
+}
+
 const addPincode = async (req, res) =>{
     const {pincode, postalOffice} = req.body;
 
@@ -28,7 +44,24 @@ const addPincode = async (req, res) =>{
     }
 }
 
+const deletePincode = async(req,res) => {
+    const {pincode} = req.body;
+    try{
+        let existingPincode = await Pincode.findOneAndDelete({pincode:pincode});
+        
+        if(existingPincode){
+            res.status(204).json({message: "Deleted Successfully"})
+        }
+        else res.status(404).json({message: "Pincode Does Not Exist"})
+    } catch(error){
+        console.log(error);
+        res.status(500).json({message: "Internal Server Error"})
+    }
+}
+
 
 module.exports = {
-    addPincode
+    addPincode,
+    deletePincode,
+    getPincodes
 }
