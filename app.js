@@ -6,6 +6,7 @@ const users = require('./routes/user')
 const scrap = require('./routes/scrap')
 const cartItems = require('./routes/cart')
 const order = require('./routes/order')
+const pincode = require('./routes/pincode')
 const notFound = require('./middleware/notFound')
 
 require('dotenv').config();
@@ -22,6 +23,7 @@ app.use('/api/v1', users)
 app.use('/api/v1', cartItems)
 app.use('/api/v1', scrap)
 app.use('/api/v1', order)
+app.use('/api/v1', pincode)
 app.use(notFound)
 
 
